@@ -7,19 +7,36 @@ import com.misabitencourt.web.todolist.todolistreactive.exception.ValidationErro
 import com.misabitencourt.web.todolist.todolistreactive.service.TodoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.misabitencourt.web.todolist.todolistreactive.entity.Todo;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.reactive.function.BodyInserters;
 
 @SpringBootTest
+@AutoConfigureWebTestClient
 class TodolistReactiveApplicationTests {
 
 	@Autowired
 	TodoService todoService;
 
+	@Autowired
+	private WebTestClient webClient;
+
 	@Test
 	void contextLoads() {}
+
+	private Todo createBasicTodo() {
+		final String todoTitle = "Pay the tax";
+		return new Todo(todoTitle, new Date(), null, null);
+	}
 
 	@Test
 	void shouldValidateAndCreateTodos() throws Exception {
@@ -32,7 +49,7 @@ class TodolistReactiveApplicationTests {
 			assertThat(e.getError()).isEqualTo(ValidationError.ERROR_REQUIRED);
 		}
 		try {
-			todo.setText("Teste");
+			todo.setText("Test");
 			todoService.create(todo);
 			throw new Exception("Todo does not validating.");
 		} catch (ValidationError e) {
@@ -45,13 +62,12 @@ class TodolistReactiveApplicationTests {
 
 	@Test
 	void shouldRetrieveTodos() throws ValidationError {
-		final String todoTitle = "Pay the tax";
-		Todo todo = new Todo(todoTitle, new Date(), null, null);
+		Todo todo = createBasicTodo();
 		todoService.create(todo);
 		List<Todo> todoList = todoService.retrieve();
 		assertThat(todoList).isNotNull();
 		assertThat(todoList.size()).isGreaterThan(0);
-		assertThat(todoList.get(todoList.size()-1).getText()).isEqualTo(todoTitle);
+		assertThat(todoList.get(todoList.size()-1).getText()).isEqualTo(todo.getText());
 	}
 
 	@Test
@@ -86,6 +102,30 @@ class TodolistReactiveApplicationTests {
 				}
 			}
 		}
+	}
+	@Test
+	void shouldPing() {
+		webClient.get()
+						.uri("/heart-beat/")
+					  	.exchange()
+						.expectStatus()
+						.isOk()
+						.expectBody(String.class)
+						.isEqualTo("Alive!");
+	}
+
+	@Test
+	void shouldPostTodo() {
+		Todo todo = createBasicTodo();
+		webClient.post()
+				.uri("/todo/")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Content-Type", "application/json")
+				.body(BodyInserters.fromValue(todo))
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(Todo.class);
 	}
 
 }
