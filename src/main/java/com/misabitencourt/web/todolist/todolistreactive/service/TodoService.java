@@ -8,46 +8,48 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class TodoService implements CRUDService<Todo> {
     @Autowired
     private TodoRepository repository;
 
-    public void validate(Todo todo) throws ValidationError {
+    public Mono<Boolean> validate(Todo todo) {
         if (todo.getText() == null || todo.getText().trim().isEmpty()) {
-            throw new ValidationError(ValidationError.ERROR_REQUIRED, "text");
+            return Mono.error(new ValidationError(ValidationError.ERROR_REQUIRED, "createdAt"));
         }
         if (todo.getCreatedAt() == null) {
-            throw new ValidationError(ValidationError.ERROR_REQUIRED, "createdAt");
+            return Mono.error(new ValidationError(ValidationError.ERROR_REQUIRED, "createdAt"));
         }
+        return Mono.just(true);
     }
 
     @Override
-    public Todo create(Todo todo) throws ValidationError {
-        this.validate(todo);
-        return this.repository.save(todo);
+    public Mono<Todo> create(Todo todo) throws ValidationError {
+        return this.validate(todo).flatMap(valid -> this.repository.save(todo));
     }
 
     @Override
-    public List<Todo> retrieve() {
-        return this.repository.retrieve();
+    public Flux<Todo> retrieve() {
+        return this.repository.findAll();
     }
 
     @Override
-    public Todo update(Todo todo) {
-        return this.repository.save(todo);
+    public Mono<Todo> update(Todo todo) {
+        return this.validate(todo).flatMap(valid -> this.repository.save(todo));
     }
 
     @Override
-    public void delete(Todo todo) {
+    public Mono<Boolean> delete(Todo todo) {
         todo.setDeletedAt(new Date());
-        this.update(todo);
+        return this.update(todo).thenReturn(Boolean.TRUE);
     }
 
-    public void maskAsDone(Todo todo) {
+    public Mono<Boolean> maskAsDone(Todo todo) {
         todo.setDoneAt(new Date());
-        this.update(todo);
+        return this.update(todo).thenReturn(Boolean.TRUE);
     }
 
 }

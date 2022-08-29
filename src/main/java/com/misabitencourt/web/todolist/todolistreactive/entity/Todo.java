@@ -2,22 +2,30 @@ package com.misabitencourt.web.todolist.todolistreactive.entity;
 
 import java.util.Date;
 
-import jakarta.persistence.Entity;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 
 
-@Entity
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
-public class Todo extends AbstractPersistable<Long> {
+public class Todo implements Persistable<Long> {
 
     private static final long serialVersionUID = -2952735933715107252L;
+
+    @Transient
+    private boolean isNew;
+
+    @Id
+    private Long id;
     private String text;
-	private Date createdAt;
+	  private Date createdAt;
     private Date doneAt;
     private Date deletedAt;
 

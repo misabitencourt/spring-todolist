@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class TodoController {
@@ -16,12 +17,12 @@ public class TodoController {
     private TodoService todoService;
 
     @GetMapping("/heart-beat/")
-    public String index() {
-        return "Alive!";
+    public Mono<String> index() {
+        return Mono.just("Alive!");
     }
 
     @PostMapping(value = "/todo/")
-    public Todo create(@RequestBody Todo todo) throws ValidationError {
+    public Mono<Todo> create(@RequestBody Todo todo) throws ValidationError {
         return todoService.create(todo);
     }
 }
