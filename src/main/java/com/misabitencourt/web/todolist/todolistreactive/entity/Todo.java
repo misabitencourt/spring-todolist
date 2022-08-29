@@ -1,7 +1,10 @@
 package com.misabitencourt.web.todolist.todolistreactive.entity;
 
+import java.time.LocalTime;
 import java.util.Date;
+import java.util.UUID;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +18,8 @@ import org.springframework.data.domain.Persistable;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Todo implements Persistable<Long> {
+@AllArgsConstructor
+public class Todo implements Persistable<UUID> {
 
     private static final long serialVersionUID = -2952735933715107252L;
 
@@ -23,17 +27,10 @@ public class Todo implements Persistable<Long> {
     private boolean isNew;
 
     @Id
-    private Long id;
+    private UUID id;
     private String text;
-	  private Date createdAt;
-    private Date doneAt;
-    private Date deletedAt;
-
-    public Todo(String text, Date createdAt, Date doneAt, Date deletedAt) {
-        this.text = text;
-        this.createdAt = createdAt;
-        this.doneAt = doneAt;
-        this.deletedAt = deletedAt;
-    }
+	  private LocalTime createdAt;
+    private LocalTime doneAt;
+    private LocalTime deletedAt;
 
 }

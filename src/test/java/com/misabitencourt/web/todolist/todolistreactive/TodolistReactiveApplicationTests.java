@@ -1,5 +1,6 @@
 package com.misabitencourt.web.todolist.todolistreactive;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,9 @@ import com.misabitencourt.web.todolist.todolistreactive.entity.Todo;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @SpringBootTest
 @AutoConfigureWebTestClient
@@ -38,18 +41,26 @@ class TodolistReactiveApplicationTests {
 	}
 
 	@Test
-	void shouldRetrieveTodos() throws ValidationError {
+	void shouldSaveTodo() throws ValidationError {
 		final Todo todo = createBasicTodo();
-		todoService.create(todo).map(todoSaved -> {
+		StepVerifier.create(
+				todoService.create(todo)
+		).assertNext(todoSaved -> {
 			assertThat(todoSaved.getText()).isEqualTo(todo.getText());
 			assertThat(todoSaved.getDeletedAt()).isNull();
-			return todoService.retrieve().collectList().flatMap(todoList -> {
-				assertThat(todoList).isNotNull();
-				assertThat(todoList.size()).isGreaterThan(0);
-				assertThat(todoList.get(todoList.size()-1).getText()).isEqualTo(todo.getText());
-				return Mono.just(true);
-			});
-		});
+		})
+		.expectComplete()
+		.verify();
+	}
+
+	@Test
+	void shouldRetrieveTodo() throws ValidationError {
+		/*StepVerifier.create(
+				todoService.retrieve().collectList().filterWhen(todo -> {
+					return Mono.just(true);
+				})
+		).expectComplete()
+		 .verify();*/
 	}
 
 	@Test

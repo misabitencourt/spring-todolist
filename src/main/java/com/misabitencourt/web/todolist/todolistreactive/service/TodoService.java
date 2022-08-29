@@ -6,8 +6,10 @@ import com.misabitencourt.web.todolist.todolistreactive.repository.TodoRepositor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -28,7 +30,11 @@ public class TodoService implements CRUDService<Todo> {
 
     @Override
     public Mono<Todo> create(Todo todo) throws ValidationError {
-        return this.validate(todo).flatMap(valid -> this.repository.save(todo));
+        return this.validate(todo).flatMap(valid -> {
+            todo.setNew(true);
+            todo.setId(UUID.randomUUID());
+            return this.repository.save(todo);
+        });
     }
 
     @Override
@@ -43,12 +49,12 @@ public class TodoService implements CRUDService<Todo> {
 
     @Override
     public Mono<Boolean> delete(Todo todo) {
-        todo.setDeletedAt(new Date());
+        todo.setDeletedAt(LocalTime.now());
         return this.update(todo).thenReturn(Boolean.TRUE);
     }
 
     public Mono<Boolean> maskAsDone(Todo todo) {
-        todo.setDoneAt(new Date());
+        todo.setDoneAt(LocalTime.now());
         return this.update(todo).thenReturn(Boolean.TRUE);
     }
 
