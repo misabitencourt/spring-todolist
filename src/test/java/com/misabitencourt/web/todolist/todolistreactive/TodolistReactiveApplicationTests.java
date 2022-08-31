@@ -1,5 +1,6 @@
 package com.misabitencourt.web.todolist.todolistreactive;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,70 +38,60 @@ class TodolistReactiveApplicationTests {
 
 	private Todo createBasicTodo() {
 		final String todoTitle = "Pay the tax";
-		return new Todo(todoTitle, new Date(), null, null);
+		return new Todo(false, null, todoTitle, LocalTime.now(), null, null);
 	}
 
 	@Test
 	void shouldSaveTodo() throws ValidationError {
 		final Todo todo = createBasicTodo();
 		StepVerifier.create(
-				todoService.create(todo)
-		).assertNext(todoSaved -> {
-			assertThat(todoSaved.getText()).isEqualTo(todo.getText());
-			assertThat(todoSaved.getDeletedAt()).isNull();
-		})
+				todoService.create(todo).map(todoSaved -> {
+					assertThat(todoSaved.getText()).isEqualTo(todo.getText());
+					assertThat(todoSaved.getDeletedAt()).isNull();
+					return todoService.retrieve().collectList().map(todoList -> {
+						assertThat(todoList.isEmpty()).isFalse();
+						return todoList;
+					});
+				})
+		).assertNext(todoList -> todoList.thenReturn(true))
 		.expectComplete()
 		.verify();
 	}
 
 	@Test
-	void shouldRetrieveTodo() throws ValidationError {
-		/*StepVerifier.create(
-				todoService.retrieve().collectList().filterWhen(todo -> {
-					return Mono.just(true);
-				})
-		).expectComplete()
-		 .verify();*/
-	}
-
-	@Test
 	void shouldDeleteTodo() throws ValidationError {
-//		StringBuilder todoTitle = new StringBuilder("Pay the tax at ");
-//		todoTitle.append((new Date()).getTime());
-//		Todo todo = new Todo(todoTitle.toString(), new Date(), null, null);
-//		todoService.create(todo);
-//		List<Todo> todos = todoService.retrieve();
-//		assertThat(todos).isNotNull();
-//		assertThat(todos.size()).isGreaterThan(0);
-//		Todo first = todos.get(0);
-//		assertThat(first.getText()).isEqualTo(todoTitle.toString());
-//		todoService.delete(first);
-//		todos = todoService.retrieve();
-//		for (Todo todoItem : todos) {
-//			assertThat(todoItem.getId()).isNotEqualTo(first.getId());
-//		}
+		final Todo todo = createBasicTodo();
+		StepVerifier.create(
+			todoService.create(todo).map(todoSaved -> {
+				return todoService.delete(todo).map(deleted -> {
+					assertThat(deleted).isTrue();
+					return Mono.just(true);
+				});
+			})
+		).assertNext(deletedTodo -> deletedTodo.thenReturn(true))
+		 .expectComplete()
+		 .verify();
 	}
 
 	@Test
 	void shouldMarkAsDone() throws ValidationError {
-//		final String todoTitle = "Pay the tax";
-//		Todo todo = new Todo(todoTitle, new Date(), null, null);
-//		todo = todoService.create(todo);
-//		todoService.maskAsDone(todo);
-//		List<Todo> todoList = todoService.retrieve();
-//		for (Todo todoItem : todoList) {
-//			if (todoItem.getId() != null) {
-//				if (todoItem.getId().equals(todo.getId())) {
-//					assertThat(todo.getDoneAt()).isNotNull();
-//				}
-//			}
-//		}
+		final Todo todo = createBasicTodo();
+		StepVerifier.create(
+				todoService.create(todo).map(todoSaved -> {
+					return todoService.maskAsDone(todo).map(updated -> {
+						assertThat(updated).isTrue();
+						return Mono.just(true);
+					});
+				})
+		).assertNext(updatedTodo -> updatedTodo.thenReturn(true))
+		 .expectComplete()
+		 .verify();
 	}
 	@Test
 	void shouldPing() {
 		webClient.get()
 						.uri("/heart-beat/")
-					  	.exchange()
+						.exchange()
 						.expectStatus()
 						.isOk()
 						.expectBody(String.class)
