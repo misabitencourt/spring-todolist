@@ -39,7 +39,7 @@ public class TodoService implements CRUDService<Todo> {
 
     @Override
     public Flux<Todo> retrieve() {
-        return this.repository.findAll();
+        return this.repository.retrieve();
     }
 
     @Override
@@ -49,8 +49,11 @@ public class TodoService implements CRUDService<Todo> {
 
     @Override
     public Mono<Boolean> delete(Todo todo) {
-        todo.setDeletedAt(LocalTime.now());
-        return this.update(todo).thenReturn(Boolean.TRUE);
+        return repository.findById(todo.getId()).map(todoLoaded -> {
+            todoLoaded.setDeletedAt(LocalTime.now());
+            todoLoaded.setNew(false);
+            return this.repository.save(todoLoaded).thenReturn(Boolean.TRUE);
+        }).thenReturn(Boolean.TRUE);
     }
 
     public Mono<Boolean> maskAsDone(Todo todo) {
