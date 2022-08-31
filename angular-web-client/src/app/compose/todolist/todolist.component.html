@@ -1,0 +1,33 @@
+
+<p *ngIf="todolistState.loaded && !todolistState.todoList.length">Nothing to do</p>
+
+<ul class="m-5" *ngIf="!!todolistState.todoList.length">
+  <li *ngFor="let todo of todolistState.todoList" class="mb-3 text-slate-900 font-medium">
+    <span class="mr-3" *ngIf="todolistState.editingTodo && todolistState.editingTodo.id === todo.id">
+      <input type="text" (keyup)="typed($event, todolistState.editingTodo)" [value]="todolistState.editingTodo.text" placeholder="Type your task" />
+    </span>
+    <span class="mr-3" *ngIf="(!todolistState.editingTodo) || (todolistState.editingTodo.id !== todo.id)">{{ todo.text }}</span>
+
+    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(null)"
+      *ngIf="todolistState.editingTodo && todolistState.editingTodo.id === todo.id">🚫</a></span>
+
+    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(todo)"
+      *ngIf="todolistState.editingTodo && todolistState.editingTodo.id === todo.id">💾</a></span>
+
+    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(todo)"
+      *ngIf="(!todolistState.editingTodo) || (todolistState.editingTodo.id !== todo.id)">✏️</a></span>
+
+    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="destroy(todo)">🗑️</a></span>
+  </li>
+</ul>
+
+<span class="mr-3" *ngIf="todolistState.editingTodo && !todolistState.editingTodo.id">
+  <input type="text" (keyup)="typed($event, todolistState.editingTodo)" [value]="todolistState.editingTodo.text" placeholder="Type your task" />
+  <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(null)">🚫</a></span>
+  <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="save()">💾</a></span>
+</span>
+
+<a href="javascript:;" class="mt-5 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-3 py-1 text-base font-medium text-white hover:bg-indigo-700"
+  (click)="create()" *ngIf="!todolistState.editingTodo">
+  New Todo
+</a>

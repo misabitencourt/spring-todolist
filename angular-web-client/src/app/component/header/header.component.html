@@ -1,0 +1,35 @@
+<!-- This example requires Tailwind CSS v2.0+ -->
+<div class="relative bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="flex items-center justify-between border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10">
+      <div class="flex justify-start lg:w-0 lg:flex-1">
+        <a href="#">
+          My App
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    Mobile menu, show/hide based on mobile menu state.
+
+    Entering: "duration-200 ease-out"
+      From: "opacity-0 scale-95"
+      To: "opacity-100 scale-100"
+    Leaving: "duration-100 ease-in"
+      From: "opacity-100 scale-100"
+      To: "opacity-0 scale-95"
+  -->
+  <div class="absolute inset-x-0 top-0 origin-top-right transform p-2 transition md:hidden">
+    <div class="divide-y-2 divide-gray-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+      <div class="px-5 pt-5 pb-6">
+        <div class="flex items-center justify-between">
+          <div>
+            My app
+          </div>
+          <div class="-mr-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
