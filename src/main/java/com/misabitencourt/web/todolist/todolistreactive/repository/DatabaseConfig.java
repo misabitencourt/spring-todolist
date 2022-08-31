@@ -33,7 +33,7 @@ public class DatabaseConfig extends AbstractR2dbcConfiguration {
         .host(this.databaseUrl)
         .port(Integer.valueOf(this.databasePort))
         .username(this.databaseUsername)
-        .password(this.databaseUsername)
+        .password(this.databasePassword)
         .database(this.databaseName)
         .build());
   }
