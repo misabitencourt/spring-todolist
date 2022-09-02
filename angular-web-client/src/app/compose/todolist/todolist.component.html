@@ -6,15 +6,16 @@
     <span class="mr-3" *ngIf="todolistState.editingTodo && todolistState.editingTodo.id === todo.id">
       <input type="text" (keyup)="typed($event, todolistState.editingTodo)" [value]="todolistState.editingTodo.text" placeholder="Type your task" />
     </span>
-    <span class="mr-3" *ngIf="(!todolistState.editingTodo) || (todolistState.editingTodo.id !== todo.id)">{{ todo.text }}</span>
+    <span class="mr-3 inline-block w-56"
+      *ngIf="(!todolistState.editingTodo) || (todolistState.editingTodo.id !== todo.id)">{{ todo.text }}</span>
 
-    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(null)"
+    <span class="ml-5"><a href="javascript:;" title="Cancel this" (click)="edit(null)"
       *ngIf="todolistState.editingTodo && todolistState.editingTodo.id === todo.id">🚫</a></span>
 
-    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(todo)"
+    <span class="ml-5"><a href="javascript:;" title="Save this" (click)="save()"
       *ngIf="todolistState.editingTodo && todolistState.editingTodo.id === todo.id">💾</a></span>
 
-    <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(todo)"
+    <span class="ml-5"><a href="javascript:;" title="Edit this" (click)="edit(todo)"
       *ngIf="(!todolistState.editingTodo) || (todolistState.editingTodo.id !== todo.id)">✏️</a></span>
 
     <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="destroy(todo)">🗑️</a></span>
@@ -23,8 +24,8 @@
 
 <span class="mr-3" *ngIf="todolistState.editingTodo && !todolistState.editingTodo.id">
   <input type="text" (keyup)="typed($event, todolistState.editingTodo)" [value]="todolistState.editingTodo.text" placeholder="Type your task" />
-  <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="edit(null)">🚫</a></span>
-  <span class="ml-5"><a href="javascript:;" title="Delete this" (click)="save()">💾</a></span>
+  <span class="ml-5"><a href="javascript:;" title="Cancel this" (click)="edit(null)">🚫</a></span>
+  <span class="ml-5"><a href="javascript:;" title="Save this" (click)="save()">💾</a></span>
 </span>
 
 <a href="javascript:;" class="mt-5 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-3 py-1 text-base font-medium text-white hover:bg-indigo-700"

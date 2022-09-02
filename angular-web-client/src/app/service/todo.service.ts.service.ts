@@ -52,4 +52,19 @@ export class TodoServiceTsService {
       })
     });
   }
+
+  update(todo: Todo) {
+    return new Promise((resolve, reject) => {
+      this.http.put(`${environment.apiUrl}/todo/${todo.id}/`, JSON.stringify(todo), {
+        headers: {'Content-Type': 'application/json'}
+      }).subscribe({
+        next() {
+          resolve(null);
+        },
+        error(err) {
+          reject(err);
+        }
+      })
+    });
+  }
 }

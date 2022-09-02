@@ -57,7 +57,11 @@ export class TodolistComponent implements OnInit {
     (async () => {
       try {
         if (this.todolistState.editingTodo) {
-          await this.todolistService.save(this.todolistState.editingTodo);
+          if (this.todolistState.editingTodo.id) {
+            await this.todolistService.update(this.todolistState.editingTodo);
+          } else {
+            await this.todolistService.save(this.todolistState.editingTodo);
+          }
         }
         this.edit(null);
         this.ngOnInit();
