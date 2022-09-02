@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -40,8 +41,19 @@ public class TodoController {
         todo.setCreatedAt(LocalTime.now());
         return todoService.create(todo);
     }
+
+    @PutMapping(value = "/todo/{id}/")
+    public Mono<Todo> update(@RequestBody Todo todo) throws ValidationError {
+        todo.setNew(false);
+        return todoRepository.save(todo).onErrorReturn(todo);
+    }
+
     @DeleteMapping(value = "/todo/{id}/")
-    public Mono<Boolean> delete(@PathVariable UUID id) throws ValidationError {
-        return todoRepository.deleteById(id).then(Mono.just(Boolean.TRUE));
+    public Mono<Boolean> delete(@PathVariable UUID id) {
+        return todoRepository.findById(id).flatMap(todo -> {
+            todo.setDeletedAt(LocalTime.now());
+            return todoRepository.save(todo)
+                .then(Mono.just(Boolean.TRUE)).onErrorReturn(true);
+        });
     }
 }

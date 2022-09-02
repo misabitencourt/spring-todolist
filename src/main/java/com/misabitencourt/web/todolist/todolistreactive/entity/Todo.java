@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 
 
 @Data
@@ -27,7 +28,9 @@ public class Todo implements Persistable<UUID> {
     private boolean isNew;
 
     @Id
+    @Column("id")
     private UUID id;
+
     private String text;
 	  private LocalTime createdAt;
     private LocalTime doneAt;
